@@ -141,6 +141,9 @@
   <ItemGroup>
     <ClCompile Include="Ipodrom.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Ipodrom.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
