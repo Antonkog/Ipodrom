@@ -26,7 +26,7 @@ int trapX, trapY, score;
 
 int bitCarriage = -1;
 
-bool trap;
+int trapHourse;
 
 
 enum eDirecton { STOP = 0, LEFT, RIGHT, UP, DOWN };
@@ -88,7 +88,7 @@ void draw()
 		cout << "#";
 	cout << endl;
 
-	trap = false;
+	trapHourse = 0;
 
 	for (int h = 0; h < height; h++)
 	{
@@ -111,7 +111,7 @@ void draw()
 				list<Carriage>::iterator p = carriages.begin();
 				while (p != carriages.end()) {
 					if (trapY == p->y && trapX == p->x) {
-						trap = true;
+						trapHourse = p->name;
 					}
 
 					if (h == p->y && w == p->x && !print) {
@@ -136,8 +136,8 @@ void draw()
 	cout << endl;
 
 	cout << "Score:" << score << endl;
-	if (trap) {
-		cout << "Your hourse is thrapped somwhere";
+	if (trapHourse != 0) {
+		cout << "carriage " << trapHourse << " is trapped somewhere; speed -1 \n";
 	}
 }
 
@@ -179,73 +179,99 @@ void input()
 }
 
 
+
 void logic()
 {
 	bool hasWinner = false;
 	list<Carriage>::iterator p = carriages.begin();
+
 	while (p != carriages.end()) {
-		if (p->getName() == bitCarriage) {
-			score = p->progress * 100 / maxProgress;//percentage from all way
-		}
 
-		if (p->progress >= maxProgress) {
-			gameOver = true;
-			if (hasWinner)  cout << "also wins - carriage number: " << p->getName() << "\n";
-			else {
-				cout << "Winner is carriage number: " << p->getName() << "\n";
-				hasWinner = true;
-			}
-		}
-
-		p->speed += (rand() % 2 - 1); // speed change randomly every step, that will avarage speed defference
-
-
-		if (p->getDirection() == STOP) p->setDirection(DOWN);
-
-		if (trap)
+		if (p->x == trapX && p->y == trapY)//horse trapped 
 		{
 			Sleep(5000);
 			p->speed -= 1;
 
 		}
 
-		if (p->speed < 0) p->speed = 1; // to prevent moving backwords 
-		if (p->getDirection() == DOWN) {
-			p->y = p->y + p->speed;
-			trapX = (rand() % 8);
-			trapY = rand() % 40;
+		if (p->progress >= maxProgress) {
+			gameOver = true;
+			if (hasWinner)  cout << "right after winner comes carriage number: " << p->getName() << "\n";
+			else {
+				cout << "Winner is carriage number: " << p->getName() << "\n";
+				hasWinner = true;
+				if (bitCarriage == p->getName()) {
+					cout << "H     H HHHHHHH H     H    H     H HHH H     H HHH \n";
+					cout << " H   H  H     H H     H    H  H  H  H  HH    H HHH \n";
+					cout << "  H H   H     H H     H    H  H  H  H  H H   H HHH \n";
+					cout << "   H    H     H H     H    H  H  H  H  H  H  H  H  \n";
+					cout << "   H    H     H H     H    H  H  H  H  H   H H     \n";
+					cout << "   H    H     H H     H    H  H  H  H  H    HH HHH \n";
+					cout << "   H    HHHHHHH  HHHHH      HH HH  HHH H     H HHH \n";
+				}
+				else {
+					cout << "H     H HHHHHHH H     H    H       HHHHHHH  HHHHH  HHHHHH \n";
+					cout << " H   H  H     H H     H    H       H     H H     H H       \n";
+					cout << "  H H   H     H H     H    H       H     H H       H       \n";
+					cout << "   H    H     H H     H    H       H     H  HHHHH  HHHHH   \n";
+					cout << "   H    H     H H     H    H       H     H       H H       \n";
+					cout << "   H    H     H H     H    H       H     H H     H H       \n";
+					cout << "   H    HHHHHHH  HHHHH     HHHHHHH HHHHHHH  HHHHH  HHHHHH \n";
+				}
+			}
+		}
 
-		}
-		else if (p->getDirection() == RIGHT) {
-			p->x = p->x + p->speed;
-			trapX = (rand() % 40);
-			trapY = rand() % 8 + 32;
-		}
-		else if (p->getDirection() == UP) {
-			p->y = p->y - p->speed;
-			trapX = (rand() % 8 + 32);
-			trapY = rand() % 40;
-		}
-		else if (p->getDirection() == LEFT) {
-			p->x = p->x - p->speed;
-			trapX = (rand() % 40);
-			trapY = rand() % 8;
+		if (p->getName() == bitCarriage) {
+			score = p->progress * 100 / maxProgress;//percentage from all way
 		}
 
+		p->speed += (rand() % 2 - 1);// speed change randomly every step, that will average speed difference
+		if (p->speed < 0) p->speed = 1; // to prevent moving backwards	
 		p->progress += p->speed;
 
-		if (p->y >= height - p->getName()) {
-			p->setDirection(RIGHT);
-		}
-		if (p->x >= width - p->getName()) {
-			p->setDirection(UP);
-		}
+		if (p->getDirection() == STOP) p->setDirection(DOWN);
+		//here is logic to put carriages on their tails, based on index that is name here. For simplicity
+		if (p->y >= height - p->getName()) { p->setDirection(RIGHT); }
+		if (p->x >= width - p->getName()) { p->setDirection(UP); }
 		if (p->x > 8 && p->y < p->getName()) p->setDirection(LEFT);
 		if (p->y < 8 && p->x < p->getName() + 1) p->setDirection(DOWN);
 
+		//new trap is placed only on the way
+		if (p->name == 8) {
+			if (p->getDirection() == DOWN) {
+				trapX = (rand() % 8);
+				trapY = rand() % 40;
+			}
+			else if (p->getDirection() == RIGHT) {
+				trapX = (rand() % 40);
+				trapY = rand() % 8 + 32;
+			}
+			else if (p->getDirection() == UP) {
+				trapX = (rand() % 8 + 32);
+				trapY = rand() % 40;
+			}
+			else if (p->getDirection() == LEFT) {
+				trapX = (rand() % 40);
+				trapY = rand() % 8;
+			}
+		}
+
+		if (p->getDirection() == DOWN) {
+			p->y = p->y + p->speed;
+		}
+		else if (p->getDirection() == RIGHT) {
+			p->x = p->x + p->speed;
+		}
+		else if (p->getDirection() == UP) {
+			p->y = p->y - p->speed;
+		}
+		else if (p->getDirection() == LEFT) {
+			p->x = p->x - p->speed;
+		}
 		p++;
 	}
 }
+
 
 
 int main(int argc, const char* argv[])
