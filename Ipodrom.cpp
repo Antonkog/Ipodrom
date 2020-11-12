@@ -1,7 +1,5 @@
 ﻿// Ipodrom.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
-
-#include <iostream>
 // Ipodrom.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 //
 //  main.cpp
@@ -25,7 +23,11 @@ const int height = 40;
 const int maxProgress = 38 * 4 + 4; //156 - biggest round
 int trapX, trapY, score;
 
+
 int bitCarriage = -1;
+
+bool trap;
+
 
 enum eDirecton { STOP = 0, LEFT, RIGHT, UP, DOWN };
 //eDirecton dir;
@@ -63,7 +65,6 @@ public:
 		return name;
 	}
 };
-
 list<Carriage> carriages;
 
 void setup()
@@ -78,14 +79,16 @@ void setup()
 	score = 0;
 }
 
+
 void draw()
 {
 	system("cls");
-	int score = 0;
 
 	for (int w = 0; w < width + 1; w++)
 		cout << "#";
 	cout << endl;
+
+	trap = false;
 
 	for (int h = 0; h < height; h++)
 	{
@@ -107,6 +110,10 @@ void draw()
 			{
 				list<Carriage>::iterator p = carriages.begin();
 				while (p != carriages.end()) {
+					if (trapY == p->y && trapX == p->x) {
+						trap = true;
+					}
+
 					if (h == p->y && w == p->x && !print) {
 						cout << p->getName();
 						print = true;
@@ -129,6 +136,9 @@ void draw()
 	cout << endl;
 
 	cout << "Score:" << score << endl;
+	if (trap) {
+		cout << "Your hourse is thrapped somwhere";
+	}
 }
 
 void input()
@@ -191,13 +201,14 @@ void logic()
 
 
 		if (p->getDirection() == STOP) p->setDirection(DOWN);
-		if (p->x == trapX && p->y == trapY)//horse trapped  (abs(p->x - trapX) < p->speed && abs(p->y - trapY) < p-> speed)
+
+		if (trap)
 		{
-			cout << "carriage " << p->getName() << " is trapped somewhere\n";
 			Sleep(5000);
 			p->speed -= 1;
 
 		}
+
 		if (p->speed < 0) p->speed = 1; // to prevent moving backwords 
 		if (p->getDirection() == DOWN) {
 			p->y = p->y + p->speed;
