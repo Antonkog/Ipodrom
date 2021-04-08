@@ -104,6 +104,7 @@ void setup()
 //    RECT ConsoleRect;
 //    GetWindowRect(console, &ConsoleRect);
 //    MoveWindow(console, ConsoleRect.left, ConsoleRect.top, 800, 800, TRUE);
+    srand( (unsigned int) time(NULL) );
     for (int i = 1; i < 9; i++) carriages.push_back(Carriage(i)); // 8 carriages to choose
     trapX = rand() % 8 + rand() % 1 * 32;
     trapY = rand() % 8 + rand() % 1 * 32;
@@ -192,7 +193,7 @@ void input()
             cin >> bitCarriage;
             cout << "your carriage number is " << bitCarriage << " game start!\n";
             gameOver = false;
-            usleep(1500);
+            usleep(1000000);
             break;
         case 2:
             cout << " first enter 1,\n next step is to choose Carriage number, \n after that game will start\n";
@@ -221,7 +222,7 @@ void logic()
 
         if (p->x == trapX && p->y == trapY)//horse trapped
         {
-            usleep(5000);
+            usleep(5000000);
             p->speed -= 1;
 
         }
@@ -308,32 +309,13 @@ void logic()
 
 int main(int argc, const char* argv[])
 {
-
-
-
     input();
     setup();
     while (!gameOver)
     {
         draw();
         logic();
-#if __APPLE__
-        #include "TargetConditionals.h"
-        usleep(500);
-        #if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
-            printf("iPhone stimulator\n");
-        #elif TARGET_OS_IPHONE
-            printf("iPhone\n");
-        #elif TARGET_OS_MAC
-            printf("MacOS\n");
-        #else
-            printf("Other Apple OS\n");
-        #endif
-#else
-        printf("Not an Apple OS\n");
-    #endif
-        
-      
+        usleep(50000);
     }
     return 0;
 }
